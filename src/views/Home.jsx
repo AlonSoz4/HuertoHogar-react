@@ -23,7 +23,7 @@ function Home() {
 
       {/* 2. Sección de Categorías Destacadas (Figura 1) */}
       <div className="text-center mb-4">
-        <h2 className="fw-bold text-dark mb-4">Categorías</h2>
+        <h2 className="fw-bold text-center mb-4" style={{ color: '#8B4513', fontFamily: 'Playfair Display, serif' }}>Categorías</h2>
       </div>
 
       <div className="row g-4 justify-content-center">
@@ -33,7 +33,7 @@ function Home() {
             <div className="card-body bg-light py-5 border rounded">
               <h3 className="card-title display-6 fw-bold text-muted mb-4">400 x 200</h3>
               <h5 className="fw-bold text-dark mb-3">Frutas Frescas</h5>
-              <Link to="/categorias" className="btn btn-outline-success btn-sm px-4">Ver Catálogo</Link>
+              <Link to="/categorias" state={{ catSeleccionada: 'FRUTAS FRESCAS' }} className="btn btn-outline-success btn-sm px-4">Ver Catálogo</Link>
             </div>
           </div>
         </div>
@@ -44,7 +44,7 @@ function Home() {
             <div className="card-body bg-light py-5 border rounded">
               <h3 className="card-title display-6 fw-bold text-muted mb-4">400 x 200</h3>
               <h5 className="fw-bold text-dark mb-3">Verduras Orgánicas</h5>
-              <Link to="/categorias" className="btn btn-outline-success btn-sm px-4">Ver Catálogo</Link>
+              <Link to="/categorias" state={{ catSeleccionada: 'VERDURAS ORGÁNICAS' }} className="btn btn-outline-success btn-sm px-4">Ver Catálogo</Link>
             </div>
           </div>
         </div>
@@ -55,7 +55,17 @@ function Home() {
             <div className="card-body bg-light py-5 border rounded">
               <h3 className="card-title display-6 fw-bold text-muted mb-4">400 x 200</h3>
               <h5 className="fw-bold text-dark mb-3">Productos Orgánicos</h5>
-              <Link to="/categorias" className="btn btn-outline-success btn-sm px-4">Ver Catálogo</Link>
+              <Link to="/categorias" state={{ catSeleccionada: 'PRODUCTOS ORGÁNICOS' }} className="btn btn-outline-success btn-sm px-4">Ver Catálogo</Link>
+            </div>
+          </div>
+        </div>
+        {/* Tarjeta 4 */}
+        <div className="col-md-4">
+          <div className="card text-center shadow-sm h-100 border-0">
+            <div className="card-body bg-light py-5 border rounded">
+              <h3 className="card-title display-6 fw-bold text-muted mb-4">400 x 200</h3>
+              <h5 className="fw-bold text-dark mb-3">Lácteos</h5>
+              <Link to="/categorias" state={{ catSeleccionada: 'PRODUCTOS LÁCTEOS' }} className="btn btn-outline-success btn-sm px-4">Ver Catálogo</Link>
             </div>
           </div>
         </div>

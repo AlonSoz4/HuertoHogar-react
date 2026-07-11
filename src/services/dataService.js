@@ -22,6 +22,12 @@ export const getProducts = () => {
     return JSON.parse(localStorage.getItem("huerto_products"));
 };
 
+// READ SINGLE: Obtener un solo producto por su código para la vista de detalle
+export const getProductByCode = (code) => {
+    const todosLosProductos = getProducts() || [];
+    return todosLosProductos.find(p => p.code === code) || null;
+};
+
 // CREATE: Agregar nuevo producto (Admin)
 export const createProduct = (newProduct) => {
     const products = getProducts();
@@ -54,4 +60,47 @@ export const deleteProduct = (code) => {
         return true;
     }
     return false;
+};
+
+// ==========================================
+//      SISTEMA DE USUARIOS Y AUTENTICACIÓN
+// ==========================================
+
+// Cuenta de administrador por defecto para las pruebas del profesor
+const defaultUsers = [
+    { email: "alonso@huertohogar.cl", password: "123", name: "Alonso Admin", role: "admin" },
+    { email: "cliente@gmail.com", password: "456", name: "Juan Pérez", role: "client" }
+];
+
+const initializeUsersDB = () => {
+    if (!localStorage.getItem("huerto_users")) {
+        localStorage.setItem("huerto_users", JSON.stringify(defaultUsers));
+    }
+};
+
+// Operación: Validar credenciales (Login)
+export const loginAuthentication = (email, password) => {
+    initializeUsersDB();
+    const users = JSON.parse(localStorage.getItem("huerto_users"));
+    const foundUser = users.find(u => u.email === email && u.password === password);
+    
+    if (foundUser) {
+        return { success: true, user: { name: foundUser.name, role: foundUser.role } };
+    }
+    return { success: false, message: "Correo o contraseña incorrectos." };
+};
+
+// Operación: Registrar un nuevo usuario (Crear Cuenta)
+export const registerUser = (newUser) => {
+    initializeUsersDB();
+    const users = JSON.parse(localStorage.getItem("huerto_users"));
+    
+    if (users.some(u => u.email === newUser.email)) {
+        return { success: false, message: "Este correo ya está registrado." };
+    }
+    
+    // Todo usuario nuevo por defecto ingresa como cliente común
+    users.push({ ...newUser, role: "client" });
+    localStorage.setItem("huerto_users", JSON.stringify(users));
+    return { success: true, message: "Cuenta creada con éxito. Ya puedes iniciar sesión." };
 };
