@@ -58,7 +58,7 @@ function HomeAdmin() {
           ⚙️ Panel de Control Administrativo
         </h1>
         <p className="lead text-white-50 m-0">
-          Panel de control reactivo en **Tiempo Real** de <strong>HuertoHogar</strong>. Monitoreo automatizado de caja, órdenes y usuarios.
+          Panel de control reactivo en Tiempo Real de <strong>HuertoHogar</strong>. Monitoreo automatizado de caja, órdenes y usuarios.
         </p>
       </div>
 
@@ -89,7 +89,7 @@ function HomeAdmin() {
         {/* Productos más vendidos */}
         <div className="col-lg-6">
           <div className="card border-0 shadow-sm p-4 bg-white h-100">
-            <h5 className="fw-bold mb-3 text-dark" style={{ fontFamily: 'Playfair Display, serif' }}>⚡ Demanda Real de Abarrotes</h5>
+            <h5 className="fw-bold mb-3 text-dark" style={{ fontFamily: 'Playfair Display, serif' }}>⚡ Demanda Real de Productos</h5>
             <p className="text-muted small">Porcentaje de salida calculado automáticamente a partir de compras aprobadas.</p>
             <div className="d-flex flex-column gap-3 mt-2">
               {productosTop.length > 0 ? (
@@ -114,7 +114,7 @@ function HomeAdmin() {
         {/* Últimos usuarios incorporados */}
         <div className="col-lg-6">
           <div className="card border-0 shadow-sm p-4 bg-white h-100">
-            <h5 className="fw-bold mb-3 text-dark" style={{ fontFamily: 'Playfair Display, serif' }}>📋 Últimos Clientes Incorporados</h5>
+            <h5 className="fw-bold mb-3 text-dark" style={{ fontFamily: 'Playfair Display, serif' }}>📋 Últimos Usuarios Incorporados</h5>
             <div className="table-responsive">
               <table className="table table-sm table-hover align-middle m-0 small">
                 <thead className="table-light">
@@ -135,7 +135,7 @@ function HomeAdmin() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="3" className="text-center text-muted py-4">No hay nuevos clientes registrados en el LocalStorage.</td>
+                      <td colSpan="3" className="text-center text-muted py-4">No hay nuevos usuarios registrados en el LocalStorage.</td>
                     </tr>
                   )}
                 </tbody>
@@ -171,10 +171,10 @@ function HomeAdmin() {
             <div className="fs-1 mb-2">👥</div>
             <h4 className="fw-bold text-dark mb-3">Administración de Usuarios</h4>
             <p className="text-muted small mb-4">
-              Visualiza el listado completo de clientes registrados, edita sus datos de despacho o gestiona perfiles de acceso.
+              Visualiza el listado completo de usuarios registrados, edita sus datos de despacho o gestiona perfiles de acceso.
             </p>
             <Link to="/admin/usuarios" className="btn btn-outline-dark fw-bold mt-auto w-100 py-2">
-              Control de Clientes
+              Control de Usuarios
             </Link>
           </div>
         </div>

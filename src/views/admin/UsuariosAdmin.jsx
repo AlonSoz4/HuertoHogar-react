@@ -30,7 +30,7 @@ function UsuariosAdmin() {
     <div className="container my-5" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 gap-3">
         <h2 className="fw-bold m-0" style={{ color: '#8B4513', fontFamily: 'Playfair Display, serif' }}>
-          Control de Clientes y Roles
+          Control de Usuarios y Roles
         </h2>
         <Link to="/admin/usuarios/nuevo" className="btn btn-dark fw-bold px-4 py-2 shadow-sm">
           👤 Registrar Nuevo Usuario
