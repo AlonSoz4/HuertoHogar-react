@@ -53,7 +53,7 @@ function IniciarSesion() {
     if (validarFormulario()) {
       // Recuperamos el arreglo de usuarios simulados del LocalStorage
       const usuariosDB = JSON.parse(localStorage.getItem('huerto_users')) || [
-        { email: 'alonso@inacap.cl', password: '1234', name: 'Alonso Admin', role: 'admin' }
+        { email: 'admin@inacapmail.cl', password: 'admin1234', name: 'Alonso Admin', role: 'admin' }
       ]
 
       // Buscamos si coinciden las credenciales
@@ -62,11 +62,15 @@ function IniciarSesion() {
       )
 
       if (usuarioEncontrado) {
-        // Guardamos la sesión activa en el navegador
-        localStorage.setItem('huerto_user', JSON.stringify({
+        // 🌟 CORRECCIÓN: Guardamos la sesión activa usando la llave unificada 'huerto_session'
+        localStorage.setItem('huerto_session', JSON.stringify({
           name: usuarioEncontrado.name,
+          email: usuarioEncontrado.email,
           role: usuarioEncontrado.role
         }))
+
+        // 🚀 REAL-TIME: Disparamos el evento personalizado para que el Navbar reaccione al tiro
+        window.dispatchEvent(new Event('user-login'))
 
         // Redirección inteligente basada en el rol asociado al sistema
         if (usuarioEncontrado.role === 'admin') {
@@ -96,6 +100,7 @@ function IniciarSesion() {
       <div className="card shadow-sm border-0 p-4 w-100" style={{ maxWidth: '450px', backgroundColor: '#FFFFFF' }}>
         <h4 className="fw-bold text-center text-dark mb-4 border-bottom pb-2">Inicio de Sesión</h4>
         
+        {/* Error Global */}
         {errors.global && (
           <div className="alert alert-danger small fw-bold py-2">{errors.global}</div>
         )}

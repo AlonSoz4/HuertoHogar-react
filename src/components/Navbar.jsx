@@ -5,22 +5,41 @@ function Navbar() {
   const navigate = useNavigate()
   const cartCount = 0 // Temporal para la Entrega 2, se conectará al arreglo del carro
 
-  // Estado para capturar de forma reactiva si hay una sesión activa en el navegador
-  const [user, setUser] = useState(null)
+  // 🌟 Unificamos en un solo estado reactivo para la sesión
+  const [user, setUser] = useState(() => {
+    const session = localStorage.getItem('huerto_session')
+    return session ? JSON.parse(session) : null
+  })
 
-  // Efecto continuo: Verifica si el usuario inició sesión para pintar su nombre
+  // 🌟 Efecto Seguro: Escucha eventos de login y cambios de almacenamiento sin bucles
   useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem('huerto_user'))
-    if (savedUser) {
-      setUser(savedUser)
-    } else {
-      setUser(null)
+    const verificarSesion = () => {
+      const session = localStorage.getItem('huerto_session')
+      const datosParseados = session ? JSON.parse(session) : null
+      
+      // Solo actualiza si de verdad cambió el usuario, evitando renderizados infinitos
+      setUser((prev) => {
+        if (JSON.stringify(prev) !== JSON.stringify(datosParseados)) {
+          return datosParseados
+        }
+        return prev
+      })
     }
-  }) // Se ejecuta en cada renderizado para capturar el cambio de ruta de forma inmediata
+
+    // Escuchadores nativos para actualizar la barra al instante
+    window.addEventListener('user-login', verificarSesion)
+    window.addEventListener('storage', verificarSesion)
+
+    return () => {
+      window.removeEventListener('user-login', verificarSesion)
+      window.removeEventListener('storage', verificarSesion)
+    }
+  }, []) // 🌟 CORRECCIÓN CLAVE: Los corchetes vacíos rompen el bucle infinito de raíz
 
   const handleLogout = () => {
-    localStorage.removeItem('huerto_user')
+    localStorage.removeItem('huerto_session')
     setUser(null)
+    alert('Sesión cerrada correctamente')
     navigate('/') // Al cerrar sesión devolvemos al cliente al Home público
   }
 
@@ -40,7 +59,7 @@ function Navbar() {
         </button>
 
         <div className="collapse navbar-collapse" id="navbarNav">
-          {/* ENLACES OFICIALES DEL MENÚ (Mapeados exactamente al flujo de la Figura 1 y 2) */}
+          {/* ENLACES OFICIALES DEL MENÚ */}
           <ul className="navbar-nav mx-auto mb-2 mb-lg-0 fw-semibold text-uppercase" style={{ fontSize: '0.9rem', gap: '15px' }}>
             <li className="nav-item">
               <Link className="nav-link text-dark" to="/">Inicio</Link>
@@ -58,11 +77,11 @@ function Navbar() {
               <Link className="nav-link text-dark" to="/contacto">Contacto</Link>
             </li>
             
-            {/* 🛡️ ACCESO PRIVADO CONDICIONAL: Solo se inyecta si el usuario logueado es Administrador */}
+            {/* 🛡️ ACCESO PRIVADO CONDICIONAL: Solo aparece si el usuario logueado es Administrador */}
             {user && user.role === 'admin' && (
               <li className="nav-item">
-                <Link className="nav-link text-danger fw-bold border border-danger rounded px-2" to="/admin">
-                  ⚙️ Mantenedor
+                <Link className="nav-link text-warning fw-bold border border-warning rounded px-2" to="/admin">
+                  ⚙️ Panel Admin
                 </Link>
               </li>
             )}
@@ -81,7 +100,7 @@ function Navbar() {
                 </button>
               </div>
             ) : (
-              // Vista pública: Botones limpios de la Figura 3 para loguearse o registrarse
+              // Vista pública: Botones limpios para loguearse o registrarse
               <div className="d-flex gap-2">
                 <Link className="btn btn-link text-success fw-bold text-decoration-none small" to="/login">
                   Iniciar sesión
@@ -93,8 +112,7 @@ function Navbar() {
               </div>
             )}
 
-            {/* Icono del Carrito de Compras de la Figura 3 */}
-            {/* Icono del Carrito de Compras de la Figura 3 Conectado a la Ruta */}
+            {/* Icono del Carrito de Compras */}
             <Link 
               to="/carrito" 
               className="btn btn-success d-flex align-items-center fw-bold px-3 gap-2 shadow-sm text-decoration-none" 

@@ -81,7 +81,7 @@ function Contacto() {
       </div>
 
       <div className="card shadow-sm border-0 p-4 bg-white">
-        <h4 className="fw-bold text-center text-dark mb-4 border-bottom pb-2">FORMULARIO DE CONTACTOS</h4>
+        <h4 className="fw-bold text-center text-dark mb-4 border-bottom pb-2">FORMULARIO DE CONTACTO</h4>
         
         {/* Banner de Feedback Exitoso */}
         {success && (
