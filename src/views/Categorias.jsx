@@ -17,7 +17,7 @@ function Categorias() {
     }
   }, [location])
 
-  // 🌟 Las 4 categorías oficiales con sus imágenes de fondo reales en vez de emojis
+  // 🌟 Las 4 categorías oficiales con sus imágenes de fondo reales
   const listaCategorias = [
     { 
       id: 'FRUTAS FRESCAS', 
@@ -94,6 +94,38 @@ function Categorias() {
     }
   }
 
+  // 🌟 CORRECCIÓN OPERACIONAL: Motor reactivo para añadir abbarotes a la bolsa en tiempo real
+  const agregarAlCarro = (producto) => {
+    const carroActual = JSON.parse(localStorage.getItem('huerto_cart')) || []
+    const existe = carroActual.find(item => item.code === producto.code)
+
+    if (existe) {
+      // Validamos que no exceda las existencias físicas en bodega
+      if (Number(existe.cantidad) < Number(producto.stock)) {
+        existe.cantidad = (Number(existe.cantidad) || 0) + 1
+      } else {
+        alert(`Lo sentimos, no hay suficiente stock disponible de ${producto.name}.`)
+        return
+      }
+    } else {
+      const datosImg = obtenerImagenYPlaceholder(producto.name)
+      carroActual.push({
+        code: producto.code,
+        name: producto.name,
+        price: Number(producto.price) || 0,
+        image: datosImg.url,
+        category: producto.category,
+        cantidad: 1,
+        stockMax: Number(producto.stock) || 10
+      })
+    }
+
+    // Persistimos los datos y notificamos globalmente para actualizar la burbuja flotante del menú
+    localStorage.setItem('huerto_cart', JSON.stringify(carroActual))
+    window.dispatchEvent(new Event('cart-update'))
+    alert(`¡${producto.name} añadido al carrito con éxito!`)
+  }
+
   // Filtrado en tiempo real comparando en mayúsculas para evitar errores de tipeo
   const productosFiltrados = productos.filter(
     p => p.category && p.category.toUpperCase().trim() === categoriaSeleccionada
@@ -120,7 +152,6 @@ function Categorias() {
               }}
               onClick={() => setCategoriaSeleccionada(cat.id)}
             >
-              {/* Miniatura visual de la categoría */}
               <div className="d-flex justify-content-center pt-2">
                 <img 
                   src={cat.urlImg} 
@@ -146,12 +177,13 @@ function Categorias() {
       <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         {productosFiltrados.map((prod) => {
           const imgMeta = obtenerImagenYPlaceholder(prod.name)
+          const stockFisico = Number(prod.stock) || 0
 
           return (
             <div className="col" key={prod.code}>
               <div className="card h-100 border-0 shadow-sm p-2 bg-white card-producto">
                 
-                {/* 🌟 Contenedor de imagen real con alt descriptivo */}
+                {/* Contenedor de imagen real con alt descriptivo */}
                 <div className="bg-light border rounded overflow-hidden" style={{ height: '180px' }}>
                   <img 
                     src={imgMeta.url} 
@@ -173,11 +205,17 @@ function Categorias() {
                       <span className="fw-bold text-success" style={{ fontSize: '1.1rem' }}>
                         ${prod.price ? prod.price.toLocaleString('es-CL') : '0'}
                       </span>
-                      <span className="text-muted small">Stock: {prod.stock}</span>
+                      <span className="text-muted small">Stock: {stockFisico}</span>
                     </div>
                     
-                    <button className="btn btn-outline-success btn-sm w-100 fw-bold py-1" style={{ fontSize: '0.8rem' }}>
-                      AÑADIR AL CARRO
+                    {/* 🌟 CORRECCIÓN EN EL EVENTO: Llama a agregarAlCarro y se deshabilita si no hay existencias */}
+                    <button 
+                      className="btn btn-outline-success btn-sm w-100 fw-bold py-1" 
+                      style={{ fontSize: '0.8rem' }}
+                      onClick={() => agregarAlCarro(prod)}
+                      disabled={stockFisico === 0}
+                    >
+                      {stockFisico === 0 ? 'SIN STOCK' : 'AÑADIR AL CARRO'}
                     </button>
                   </div>
                 </div>

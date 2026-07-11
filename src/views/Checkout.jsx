@@ -48,17 +48,22 @@ function Checkout() {
     localStorage.setItem('huerto_last_order', JSON.stringify(ordenFinal))
 
     if (esExitoso) {
-      // Si el pago es correcto, descontamos el stock del dataService e inventario simulado
-      const products = JSON.parse(localStorage.getItem('huerto_products')) || []
+      // 🌟 CORRECCIÓN: Buscamos en tus posibles llaves de base de datos local
+      const storageKey = localStorage.getItem('huerto_products_db') ? 'huerto_products_db' : 'huerto_products'
+      const products = JSON.parse(localStorage.getItem(storageKey)) || []
+      
       const updatedProducts = products.map(prod => {
         const itemEnCarro = cart.find(c => c.code === prod.code)
         if (itemEnCarro) {
-          const nuevoStock = prod.stock - itemEnCarro.quantity
+          // 🌟 CORRECCIÓN CRÍTICA: Cambiado .quantity por .cantidad para evitar el NaN
+          const unidadesCompradas = Number(itemEnCarro.cantidad) || Number(itemEnCarro.quantity) || 1
+          const nuevoStock = Number(prod.stock) - unidadesCompradas
           return { ...prod, stock: nuevoStock >= 0 ? nuevoStock : 0 }
         }
         return prod
       })
-      localStorage.setItem('huerto_products', JSON.stringify(updatedProducts))
+      
+      localStorage.setItem(storageKey, JSON.stringify(updatedProducts))
       
       // Vaciamos el carro y redirigimos
       localStorage.removeItem('huerto_cart')
@@ -70,13 +75,13 @@ function Checkout() {
   }
 
   return (
-    <div className="container my-5">
+    <div className="container my-5" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="row g-4">
         
         {/* Formulario de Datos (Lado Izquierdo - Figura 6) */}
         <div className="col-md-7">
-          <div className="card shadow-sm p-4 border-0">
-            <h4 className="fw-bold text-dark mb-3">Información del Cliente</h4>
+          <div className="card shadow-sm p-4 border-0 bg-white">
+            <h4 className="fw-bold text-dark mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>Información del Cliente</h4>
             <div className="row g-3 mb-4">
               <div className="col-sm-6">
                 <label className="form-label small fw-bold">Nombre*</label>
@@ -87,12 +92,12 @@ function Checkout() {
                 <input type="text" className="form-control" name="apellidos" value={formData.apellidos} onChange={handleInputChange} required placeholder="Ej: Hacker" />
               </div>
               <div className="col-12">
-                <label className="form-label small fw-bold">Correo Electronico*</label>
+                <label className="form-label small fw-bold">Correo Electrónico*</label>
                 <input type="email" className="form-control" name="correo" value={formData.correo} onChange={handleInputChange} required placeholder="pedro.hacker@example.com" />
               </div>
             </div>
 
-            <h4 className="fw-bold text-dark mb-3">Dirección de entrega de los productos</h4>
+            <h4 className="fw-bold text-dark mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>Dirección de entrega de los productos</h4>
             <div className="row g-3">
               <div className="col-md-8">
                 <label className="form-label small fw-bold">Calle*</label>
@@ -128,14 +133,16 @@ function Checkout() {
         {/* Resumen e Interactividad del Pago (Lado Derecho) */}
         <div className="col-md-5">
           <div className="card shadow-sm p-4 bg-light border-0 text-center">
-            <h4 className="fw-bold text-dark mb-4">Total a pagar: ${totals.total.toLocaleString('es-CL')}</h4>
+            <h4 className="fw-bold text-dark mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+              Total a pagar: ${totals.total.toLocaleString('es-CL')}
+            </h4>
             <p className="text-muted small">Para efectos de evaluación de la Entrega 2, simule el comportamiento de la pasarela bancaria seleccionando un resultado:</p>
             
             <div className="d-grid gap-3 mt-3">
-              <button className="btn btn-success btn-lg fw-bold py-3 shadow-sm" type="button" onClick={() => procesarPago(true)}>
+              <button className="btn btn-success btn-lg fw-bold py-3 shadow-sm border-0" type="button" onClick={() => procesarPago(true)} style={{ backgroundColor: '#198754' }}>
                 🟢 Simular Pago Exitoso
               </button>
-              <button className="btn btn-danger btn-lg fw-bold py-3 shadow-sm" type="button" onClick={() => procesarPago(false)}>
+              <button className="btn btn-danger btn-lg fw-bold py-3 shadow-sm border-0" type="button" onClick={() => procesarPago(false)} style={{ backgroundColor: '#dc3545' }}>
                 🔴 Simular Pago con Error
               </button>
             </div>

@@ -7,15 +7,17 @@ function PagoExitoso() {
   useEffect(() => {
     // 1. Recuperamos la orden recién procesada desde el LocalStorage
     const laOrden = JSON.parse(localStorage.getItem('huerto_last_order'))
+    let ordenFinal = null
     
     if (laOrden) {
+      ordenFinal = laOrden
       setOrden(laOrden)
     } else {
       // 🌟 RESPALDO DE SEGURIDAD: Si el checkout no generó el objeto orden, simulamos uno con los totales para evitar el bloqueo
       const totalesRespaldo = JSON.parse(localStorage.getItem('huerto_checkout_totals')) || { subtotal: 0, discount: 0, total: 0 }
       const carroRespaldo = JSON.parse(localStorage.getItem('huerto_cart')) || []
       
-      setOrden({
+      ordenFinal = {
         idOrden: Math.floor(100000 + Math.random() * 900000), // Genera un ID de seguimiento dinámico
         cliente: {
           nombre: "Cliente",
@@ -27,7 +29,30 @@ function PagoExitoso() {
         },
         items: carroRespaldo,
         financiero: totalesRespaldo
-      })
+      }
+      setOrden(ordenFinal)
+    }
+
+    // 🌟 PIEZA REACTIVA 2: Almacenar la venta en el histórico global para el Dashboard en tiempo real
+    if (ordenFinal && ordenFinal.financiero && ordenFinal.financiero.total > 0) {
+      try {
+        const historialVentas = JSON.parse(localStorage.getItem('huerto_ventas_db')) || []
+        
+        // Evitamos que se duplique la misma orden si el usuario refresca la página de éxito
+        if (!historialVentas.some(v => v.idOrden === ordenFinal.idOrden)) {
+          historialVentas.push({
+            idOrden: ordenFinal.idOrden,
+            total: Number(ordenFinal.financiero.total) || 0,
+            items: ordenFinal.items.map(i => ({
+              name: i.name,
+              cantidad: Number(i.cantidad) || Number(i.quantity) || 1
+            }))
+          })
+          localStorage.setItem('huerto_ventas_db', JSON.stringify(historialVentas))
+        }
+      } catch (err) {
+        console.error("Error al guardar histórico de ventas: ", err)
+      }
     }
 
     // 🚀 OPERACIÓN CRÍTICA: Al comprar con éxito, vaciamos el carrito y notificamos al Navbar
@@ -100,13 +125,12 @@ function PagoExitoso() {
               </tr>
             </thead>
             <tbody>
-              {orden.items.map((item) => {
+              {orden.items.map((item, index) => {
                 const precio = Number(item.price) || 0
-                // 🌟 CORRECCIÓN EXPLICITA: Forzamos la lectura reactiva usando 'cantidad' para erradicar el NaN
                 const unidades = Number(item.cantidad) || Number(item.quantity) || 1
 
                 return (
-                  <tr key={item.code}>
+                  <tr key={item.code || index}>
                     <td className="fw-semibold text-dark">{item.name}</td>
                     <td className="text-center font-monospace">{unidades}</td>
                     <td className="text-end">${precio.toLocaleString('es-CL')}</td>

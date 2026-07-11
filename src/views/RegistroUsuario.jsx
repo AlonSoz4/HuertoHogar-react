@@ -126,7 +126,7 @@ function RegistroUsuario() {
     return esValido
   }
 
-  // 5. MANEJADOR DEL SUBMIT
+  // 5. MANEJADOR DEL SUBMIT RESPONSIVO
   const handleSubmit = (e) => {
     e.preventDefault()
     setSuccessMsg('')
@@ -149,6 +149,20 @@ function RegistroUsuario() {
       const resultado = registerUser(nuevoUsuario)
 
       if (resultado.success) {
+        // 🌟 PIEZA REACTIVA 1: Persistimos el cliente en el almacenamiento local para el Dashboard
+        const usuariosExistentes = JSON.parse(localStorage.getItem('huerto_usuarios_db')) || []
+        
+        // Evitamos empujar duplicados por RUN en el LocalStorage
+        if (!usuariosExistentes.some(usr => usr.run === nuevoUsuario.run)) {
+          usuariosExistentes.push({
+            run: nuevoUsuario.run,
+            nombre: `${nuevoUsuario.name} ${nuevoUsuario.lastname}`,
+            correo: nuevoUsuario.email,
+            comuna: nuevoUsuario.comuna
+          })
+          localStorage.setItem('huerto_usuarios_db', JSON.stringify(usuariosExistentes))
+        }
+
         setSuccessMsg(resultado.message)
         // Limpiamos los campos
         setRun(''); setNombre(''); setApellidos(''); setCorreo(''); setPassword('')
@@ -164,7 +178,7 @@ function RegistroUsuario() {
   }
 
   return (
-    <div className="container my-5" style={{ maxWidth: '650px' }}>
+    <div className="container my-5" style={{ maxWidth: '650px', fontFamily: 'Montserrat, sans-serif' }}>
       <div className="card shadow-sm border-0 p-4 bg-white">
         <h3 className="fw-bold text-center mb-2" style={{ color: '#8B4513', fontFamily: 'Playfair Display, serif' }}>
           Registro de Usuario
