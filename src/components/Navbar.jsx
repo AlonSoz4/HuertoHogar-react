@@ -50,7 +50,7 @@ function Navbar() {
             <input 
               className="form-control me-2" 
               type="search" 
-              placeholder="Buscar abarrotes..." 
+              placeholder="Buscar productos..." 
               aria-label="Buscar" 
             />
             <button className="btn btn-outline-success" type="submit">Buscar</button>

@@ -20,7 +20,7 @@ function Footer() {
               &copy; {currentYear} HuertoHogar. Todos los derechos reservados.
             </p>
             <p className="small text-success mb-0" style={{ fontSize: '0.8rem' }}>
-              Santiago, Chile • Proyecto Académico INACAP
+              Santiago, Chile • HuertoHogar S.A. • Av. Principal 1367, Comuna Estacion Central
             </p>
           </div>
         </div>
