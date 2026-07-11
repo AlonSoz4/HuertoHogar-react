@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getProducts } from '../services/dataService'
 
 function Carrito() {
   const navigate = useNavigate()
@@ -22,6 +21,8 @@ function Carrito() {
   const saveCartToStorage = (updatedCart) => {
     setCart(updatedCart)
     localStorage.setItem('huerto_cart', JSON.stringify(updatedCart))
+    // 🚀 Sincronización del contador global del Navbar en tiempo real
+    window.dispatchEvent(new Event('cart-update'))
   }
 
   // Operación: Eliminar un producto por completo de la bolsa
@@ -34,10 +35,16 @@ function Carrito() {
   const updateQuantity = (code, amount) => {
     const updated = cart.map(item => {
       if (item.code === code) {
-        const newQty = item.quantity + amount
-        // Validamos que no baje de 1 ni supere el stock disponible de Alonso
-        if (newQty >= 1 && newQty <= item.stock) {
-          return { ...item, quantity: newQty }
+        // 🌟 CORRECCIÓN: Leemos 'item.cantidad' y 'item.stockMax' inyectados desde Productos
+        const cantidadActual = Number(item.cantidad) || 1
+        const newQty = cantidadActual + amount
+        const limiteMax = Number(item.stockMax) || 99
+
+        // Validamos que no baje de 1 ni supere el stock disponible
+        if (newQty >= 1 && newQty <= limiteMax) {
+          return { ...item, cantidad: newQty }
+        } else if (newQty > limiteMax) {
+          alert('Lo sentimos, has alcanzado el límite de stock físico disponible.')
         }
       }
       return item
@@ -53,10 +60,14 @@ function Carrito() {
     setCouponSuccess('')
   }
 
-  // Lógica Matemática: Calcular Subtotal usando operaciones declarativas (.reduce)
-  const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0)
+  // 🌟 CORRECCIÓN: Aseguramos el casteo numérico usando 'item.cantidad' para erradicar el $NaN
+  const subtotal = cart.reduce((acc, item) => {
+    const precio = Number(item.price) || 0
+    const unidades = Number(item.cantidad) || 0
+    return acc + (precio * unidades)
+  }, 0)
 
-  // Lógica del Cupón de Descuento de Alonso (INACAP20 -> 20% de descuento)
+  // Lógica del Cupón de Descuento (INACAP20 -> 20% de descuento)
   const applyCoupon = (e) => {
     e.preventDefault()
     if (coupon.trim().toUpperCase() === 'INACAP20') {
@@ -73,32 +84,33 @@ function Carrito() {
 
   const total = subtotal - discount
 
-  // Navegación dirigida hacia la pasarela de pago
+  // Navegación dirigida hacia la pasarela de pago (Limpia de valores NaN)
   const handleCheckout = () => {
+    if (cart.length === 0) return
     localStorage.setItem('huerto_checkout_totals', JSON.stringify({ subtotal, discount, total }))
     navigate('/checkout')
   }
 
   return (
-    <div className="container my-5">
+    <div className="container my-5" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="border-bottom pb-3 mb-4">
-        <h1 className="fw-bold text-dark">Carrito de Compras</h1>
+        <h1 className="fw-bold text-dark" style={{ fontFamily: 'Playfair Display, serif' }}>Carrito de Compras</h1>
         <p className="text-muted mb-0">Revisa y gestiona los abarrotes seleccionados antes de proceder al pago.</p>
       </div>
 
       {cart.length === 0 ? (
         <div className="text-center py-5 bg-light rounded border">
           <p className="text-muted fs-5 mb-3">Tu carrito está vacío.</p>
-          <Link to="/productos" className="btn btn-success fw-bold">Ir a buscar productos</Link>
+          <Link to="/Productos" className="btn btn-success fw-bold">Ir a buscar productos</Link>
         </div>
       ) : (
         <div className="row g-4">
           
-          {/* Tabla de Productos Seleccionados (Lado Izquierdo - Figura 5) */}
+          {/* Tabla de Productos Seleccionados (Lado Izquierdo) */}
           <div className="col-lg-8">
             <div className="card shadow-sm border-0">
               <div className="table-responsive p-3">
-                <table className="table align-middle">
+                <table className="table align-middle m-0">
                   <thead className="table-light">
                     <tr>
                       <th>Producto</th>
@@ -109,44 +121,58 @@ function Carrito() {
                     </tr>
                   </thead>
                   <tbody>
-                    {cart.map((item) => (
-                      <tr key={item.code}>
-                        <td>
-                          <div className="fw-bold text-dark">{item.name}</div>
-                          <small className="text-muted">Cód: {item.code}</small>
-                        </td>
-                        <td>${item.price.toLocaleString('es-CL')}</td>
-                        <td className="text-center">
-                          <div className="d-flex justify-content-center align-items-center gap-2">
-                            <button className="btn btn-outline-secondary btn-sm" onClick={() => updateQuantity(item.code, -1)}>-</button>
-                            <span className="fw-bold px-2">{item.quantity}</span>
-                            <button className="btn btn-outline-secondary btn-sm" onClick={() => updateQuantity(item.code, 1)}>+</button>
-                          </div>
-                        </td>
-                        <td className="fw-bold">${(item.price * item.quantity).toLocaleString('es-CL')}</td>
-                        <td className="text-center">
-                          <button className="btn btn-danger btn-sm" onClick={() => removeItem(item.code)}>Eliminar</button>
-                        </td>
-                      </tr>
-                    ))}
+                    {cart.map((item) => {
+                      const precioItem = Number(item.price) || 0
+                      const cantidadItem = Number(item.cantidad) || 0
+
+                      return (
+                        <tr key={item.code}>
+                          <td>
+                            <div className="d-flex align-items-center gap-2">
+                              {item.image && item.image.startsWith('http') ? (
+                                <img src={item.image} alt={item.name} className="rounded" style={{ width: '40px', height: '40px', objectFit: 'cover' }} />
+                              ) : (
+                                <span className="fs-3">🌾</span>
+                              )}
+                              <div>
+                                <div className="fw-bold text-dark small text-truncate" style={{ maxWidth: '180px' }}>{item.name}</div>
+                                <small className="text-muted font-monospace" style={{ fontSize: '0.75rem' }}>Cód: {item.code}</small>
+                              </div>
+                            </div>
+                          </td>
+                          <td>${precioItem.toLocaleString('es-CL')}</td>
+                          <td className="text-center">
+                            <div className="d-flex justify-content-center align-items-center gap-2">
+                              <button className="btn btn-outline-secondary btn-sm py-0 px-2 fw-bold" onClick={() => updateQuantity(item.code, -1)}>-</button>
+                              <span className="fw-bold px-1 font-monospace">{cantidadItem}</span>
+                              <button className="btn btn-outline-secondary btn-sm py-0 px-2 fw-bold" onClick={() => updateQuantity(item.code, 1)}>+</button>
+                            </div>
+                          </td>
+                          <td className="fw-bold text-success">${(precioItem * cantidadItem).toLocaleString('es-CL')}</td>
+                          <td className="text-center">
+                            <button className="btn btn-sm text-danger border-0" onClick={() => removeItem(item.code)}>🗑️ Remover</button>
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>
               <div className="card-footer bg-white p-3 text-end">
-                <button className="btn btn-outline-danger fw-bold" onClick={clearCart}>Limpiar Carrito</button>
+                <button className="btn btn-outline-danger btn-sm fw-bold px-3" onClick={clearCart}>Limpiar Carrito</button>
               </div>
             </div>
           </div>
 
-          {/* Resumen Financiero y Cupón (Lado Derecho - Figura 5) */}
+          {/* Resumen Financiero y Cupón (Lado Derecho) */}
           <div className="col-lg-4">
             <div className="card shadow-sm border-0 p-4 bg-light">
-              <h4 className="fw-bold text-dark mb-4">Resumen del Pedido</h4>
+              <h4 className="fw-bold text-dark mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Resumen del Pedido</h4>
               
               {/* Formulario avanzado de Cupones */}
               <form onSubmit={applyCoupon} className="mb-4">
                 <label className="form-label small fw-bold text-muted">¿Tienes un cupón de descuento?</label>
-                <div className="input-group">
+                <div className="input-group input-group-sm">
                   <input 
                     type="text" 
                     className="form-control" 
@@ -154,7 +180,7 @@ function Carrito() {
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value)}
                   />
-                  <button className="btn btn-dark" type="submit">Aplicar</button>
+                  <button className="btn btn-dark fw-bold" type="submit">Aplicar</button>
                 </div>
                 {couponError && <div className="text-danger small mt-1 fw-bold">{couponError}</div>}
                 {couponSuccess && <div className="text-success small mt-1 fw-bold">{couponSuccess}</div>}
@@ -162,23 +188,23 @@ function Carrito() {
 
               <hr />
 
-              <div className="d-flex justify-content-between mb-2 fs-5">
+              <div className="d-flex justify-content-between mb-2 fs-6">
                 <span className="text-muted">Subtotal:</span>
                 <span className="fw-semibold">${subtotal.toLocaleString('es-CL')}</span>
               </div>
               {discount > 0 && (
-                <div className="d-flex justify-content-between mb-2 fs-5 text-success">
+                <div className="d-flex justify-content-between mb-2 fs-6 text-success fw-bold">
                   <span>Descuento (20%):</span>
                   <span>-${discount.toLocaleString('es-CL')}</span>
                 </div>
               )}
-              <div className="d-flex justify-content-between mb-4 fs-4 border-top pt-2">
+              <div className="d-flex justify-content-between mb-4 fs-5 border-top pt-2">
                 <span className="fw-bold">Total:</span>
                 <span className="fw-bold text-success">${total.toLocaleString('es-CL')}</span>
               </div>
 
-              <button className="btn btn-success btn-lg w-100 fw-bold py-3 shadow" onClick={handleCheckout}>
-                Proceder al Checkout
+              <button className="btn btn-success w-100 fw-bold py-2 shadow-sm" onClick={handleCheckout} style={{ backgroundColor: '#2E8B57', border: 'none' }}>
+                Proceder al Checkout →
               </button>
             </div>
           </div>

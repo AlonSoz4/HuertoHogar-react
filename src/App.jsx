@@ -49,8 +49,8 @@ function App() {
             <Route path="/carrito" element={<Carrito />} />
             <Route path="/categorias" element={<Categorias />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/pago-exitoso" element={<PagoExitoso />} />
-            <Route path="/pago-fallido" element={<PagoFallido />} />
+            <Route path="/pago-correcto" element={<PagoExitoso />} />
+            <Route path="/pago-error" element={<PagoFallido />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/nosotros" element={<Nosotros />} />
             <Route path="/blogs" element={<Blogs />} />

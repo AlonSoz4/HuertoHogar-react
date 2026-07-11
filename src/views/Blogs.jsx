@@ -9,16 +9,16 @@ function Blogs() {
       titulo: "CASO CURIOSO #1",
       subtitulo: "Cómo mantener tu huerto orgánico en departamentos",
       descripcionCorta: "Tener un espacio reducido no es una excusa para no cultivar tus propios alimentos. Descubre cómo aprovechar la luz de tus ventanas, el riego adecuado para macetas pequeñas y cuáles son las mejores hortalizas.",
-      imagenPlaceholder: "1200 x 400",
-      emoji: "🏢"
+      imagenPlaceholder: "Huerto en departamento"
+      
     },
     {
       id: "2",
       titulo: "CASO CURIOSO #2",
       subtitulo: "Los increíbles beneficios de consumir lácteos de campo",
       descripcionCorta: "Los productos lácteos artesanales y de libre pastoreo conservan propiedades nutricionales únicas. Conoce cómo el modelo de distribución directa de HuertoHogar ayuda a mitigar el impacto ambiental en Chile.",
-      imagenPlaceholder: "1200 x 400",
-      emoji: "🥛"
+      imagenPlaceholder: "Lacteos de campo"
+      
     }
   ]
 

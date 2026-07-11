@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import logoHuerto from '../assets/images/HuertoHogar-Logo.jpg'
 
 function Navbar() {
   const navigate = useNavigate()
@@ -66,13 +67,20 @@ function Navbar() {
   }
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2">
       <div className="container">
         
-        {/* LOGO CORPORATIVO DE HUERTOHOGAR */}
+        {/* 🌟 LOGO CORPORATIVO MOSTRADO COMPLETO Y SIN RECORTES */}
         <Link className="navbar-brand fw-bold text-success d-flex align-items-center gap-2" to="/">
-          <span className="fs-3">🌱</span> 
-          <span style={{ color: '#8B4513', fontFamily: 'Playfair Display, serif' }}>HuertoHogar</span>
+          <img 
+            src={logoHuerto} 
+            alt="Logo HuertoHogar" 
+            className="rounded border shadow-sm"
+            style={{ width: '50px', height: 'auto', maxHeight: '45px', objectFit: 'contain' }} 
+          />
+          <span className="fs-4" style={{ color: '#8B4513', fontFamily: 'Playfair Display, serif' }}>
+            HuertoHogar
+          </span>
         </Link>
 
         {/* Hamburguesa responsiva de Bootstrap para celulares */}
