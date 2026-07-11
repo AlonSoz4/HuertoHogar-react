@@ -87,9 +87,9 @@ function RegistroUsuario() {
       localErrors.email = 'El correo no puede superar los 100 caracteres.'
       esValido = false
     } else {
-      const regexDominios = /^[a-zA-Z0-9._%+-]+@(inacap\.cl|profesor\.inacap\.cl|gmail\.com)$/i
+      const regexDominios = /^[a-zA-Z0-9._%+-]+@(inacap\.cl|profesor\.inacap\.cl)$/i
       if (!regexDominios.test(correoLimpio)) {
-        localErrors.email = 'Solo se permiten dominios @inacap.cl, @profesor.inacap.cl o @gmail.com.'
+        localErrors.email = 'Solo se permiten dominios @inacap.cl o @profesor.inacap.cl'
         esValido = false
       }
     }

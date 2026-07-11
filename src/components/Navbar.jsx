@@ -3,7 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 
 function Navbar() {
   const navigate = useNavigate()
-  const cartCount = 0 // Temporal para la Entrega 2, se conectará al arreglo del carro
+
+  // 🌟 CONEXIÓN REACTIVA AL CONTADOR DEL CARRITO
+  const [cartCount, setCartCount] = useState(() => {
+    const carro = JSON.parse(localStorage.getItem('huerto_cart')) || []
+    return carro.reduce((acc, item) => acc + item.cantidad, 0)
+  })
 
   // 🌟 Unificamos en un solo estado reactivo para la sesión
   const [user, setUser] = useState(() => {
@@ -34,7 +39,24 @@ function Navbar() {
       window.removeEventListener('user-login', verificarSesion)
       window.removeEventListener('storage', verificarSesion)
     }
-  }, []) // 🌟 CORRECCIÓN CLAVE: Los corchetes vacíos rompen el bucle infinito de raíz
+  }, []) // Los corchetes vacíos rompen el bucle infinito de raíz
+
+  // 🌟 EFECTO SEGURO PARA EL CONTADOR DEL CARRITO
+  useEffect(() => {
+    const actualizarContadorCarro = () => {
+      const carro = JSON.parse(localStorage.getItem('huerto_cart')) || []
+      const totalItems = carro.reduce((acc, item) => acc + item.cantidad, 0)
+      setCartCount(totalItems)
+    }
+
+    window.addEventListener('cart-update', actualizarContadorCarro)
+    window.addEventListener('storage', actualizarContadorCarro)
+
+    return () => {
+      window.removeEventListener('cart-update', actualizarContadorCarro)
+      window.removeEventListener('storage', actualizarContadorCarro)
+    }
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem('huerto_session')

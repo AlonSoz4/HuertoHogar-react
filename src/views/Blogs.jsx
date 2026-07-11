@@ -2,28 +2,30 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 function Blogs() {
-  // Estructura de datos exacta para los dos casos curiosos exigidos por la pauta (Figura 2)
+  // 🌟 CORRECCIÓN: Ajustamos las IDs a "1" y "2" para que calcen con DetalleBlog.jsx
   const articulosBlog = [
     {
-      id: "caso-1",
+      id: "1",
       titulo: "CASO CURIOSO #1",
-      subtitulo: "Alimentación Saludable y el Impacto de los Abarrotes Orgánicos",
-      descripcionCorta: "Descubre cómo los cultivos libres de pesticidas en los valles de la Región de O'Higgins y Maule conservan hasta un 40% más de antioxidantes esenciales para tu bienestar diario.",
-      imagenPlaceholder: "1200 x 400"
+      subtitulo: "Cómo mantener tu huerto orgánico en departamentos",
+      descripcionCorta: "Tener un espacio reducido no es una excusa para no cultivar tus propios alimentos. Descubre cómo aprovechar la luz de tus ventanas, el riego adecuado para macetas pequeñas y cuáles son las mejores hortalizas.",
+      imagenPlaceholder: "1200 x 400",
+      emoji: "🏢"
     },
     {
-      id: "caso-2",
+      id: "2",
       titulo: "CASO CURIOSO #2",
-      subtitulo: "Sostenibilidad y Apoyo a los Pequeños Agricultores Locales",
-      descripcionCorta: "Comprar local reduce drásticamente la huella de carbono del transporte. Conoce cómo el modelo de distribución directa de HuertoHogar ayuda a mitigar el impacto ambiental en Chile.",
-      imagenPlaceholder: "1200 x 400"
+      subtitulo: "Los increíbles beneficios de consumir lácteos de campo",
+      descripcionCorta: "Los productos lácteos artesanales y de libre pastoreo conservan propiedades nutricionales únicas. Conoce cómo el modelo de distribución directa de HuertoHogar ayuda a mitigar el impacto ambiental en Chile.",
+      imagenPlaceholder: "1200 x 400",
+      emoji: "🥛"
     }
   ]
 
   return (
-    <div className="container my-5" style={{ color: '#333333' }}>
+    <div className="container my-5" style={{ color: '#333333', fontFamily: 'Montserrat, sans-serif' }}>
       
-      {/* Encabezado Principal del Blog (Fiel a tus mockups) */}
+      {/* Encabezado Principal del Blog */}
       <div className="text-center mb-5">
         <h2 className="fw-bold text-uppercase tracking-wide text-center mb-2" style={{ color: '#8B4513', fontFamily: 'Playfair Display, serif' }}>
           Noticias Importantes
@@ -46,20 +48,21 @@ function Blogs() {
                     {articulo.descripcionCorta}
                   </p>
                   
-                  {/* Botón de navegación hacia el Detalle del Blog (Figura 1) */}
-                  <div className="dropdown">
-                    <button className="btn btn-outline-dark btn-sm fw-bold px-4 text-uppercase dropdown-toggle" type="button">
-                      Ver Caso
-                    </button>
-                  </div>
+                  {/* 🌟 CORRECCIÓN: Botón transformado en un Link dinámico real de React Router */}
+                  <Link 
+                    to={`/blogs/${articulo.id}`} 
+                    className="btn btn-outline-dark btn-sm fw-bold px-4 text-uppercase text-decoration-none"
+                  >
+                    Ver Caso
+                  </Link>
                 </div>
 
                 {/* Contenedor Métrico de la Imagen (Lado Derecho) */}
                 <div className="col-md-5 order-1 order-md-2">
                   <div className="bg-white border rounded d-flex justify-content-center align-items-center text-muted fw-bold shadow-sm" style={{ height: '220px' }}>
                     <div className="text-center">
-                      <span className="fs-2 d-block mb-1">📰</span>
-                      <span className="small">{articulo.imagenPlaceholder}</span>
+                      <span className="display-4 d-block mb-1">{articulo.emoji}</span>
+                      <span className="small text-muted font-monospace d-block mt-2">{articulo.imagenPlaceholder}</span>
                     </div>
                   </div>
                 </div>

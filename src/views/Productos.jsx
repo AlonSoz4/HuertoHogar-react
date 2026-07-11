@@ -15,6 +15,44 @@ function Productos() {
   // Las 5 opciones de la botonera oficial de la tienda
   const categorias = ['TODOS', 'FRUTAS FRESCAS', 'VERDURAS ORGÁNICAS', 'PRODUCTOS ORGÁNICOS', 'PRODUCTOS LÁCTEOS']
 
+  // 🌟 FUNCIÓN ENLAZADA: Añade los abarrotes controlando stock y reactividad del Navbar
+  const agregarAlCarro = (producto) => {
+    // 1. Leer el estado del carrito guardado o inicializarlo vacío
+    const carroActual = JSON.parse(localStorage.getItem('huerto_cart')) || []
+
+    // 2. Comprobar si el abarrote ya fue incorporado previamente al carro
+    const existe = carroActual.find(item => item.code === producto.code)
+
+    if (existe) {
+      // Control de lógica de negocio: Validar que no se exceda el stock físico real
+      if (existe.cantidad < producto.stock) {
+        existe.cantidad += 1
+      } else {
+        alert(`Lo sentimos, no hay suficiente stock disponible de ${producto.name}.`)
+        return
+      }
+    } else {
+      // Si el ítem es nuevo, se inicializa con cantidad unitaria
+      carroActual.push({
+        code: producto.code,
+        name: producto.name,
+        price: producto.price,
+        image: '🌾',
+        category: producto.category,
+        cantidad: 1,
+        stockMax: producto.stock
+      })
+    }
+
+    // 3. Persistir los cambios actualizados en el almacenamiento local del navegador
+    localStorage.setItem('huerto_cart', JSON.stringify(carroActual))
+
+    // 4. 🚀 REACTIVIDAD: Despachar el evento global para obligar al Navbar a refrescar su contador
+    window.dispatchEvent(new Event('cart-update'))
+    
+    alert(`¡${producto.name} añadido al carrito con éxito!`)
+  }
+
   // 🌟 FILTRADO INTELIGENTE: Busca coincidencias parciales y limpia tildes/espacios
   const productosFiltrados = categoriaActiva === 'TODOS'
     ? listaProductos
@@ -98,8 +136,14 @@ function Productos() {
                     <span className="text-muted small">Stock: {prod.stock}</span>
                   </div>
                   
-                  <button className="btn btn-outline-success btn-sm w-100 fw-bold py-1" style={{ fontSize: '0.8rem' }}>
-                    AÑADIR AL CARRO
+                  {/* 🌟 ENLACE: Conectamos la función al evento click */}
+                  <button 
+                    className="btn btn-outline-success btn-sm w-100 fw-bold py-1" 
+                    style={{ fontSize: '0.8rem' }}
+                    onClick={() => agregarAlCarro(prod)}
+                    disabled={prod.stock === 0}
+                  >
+                    {prod.stock === 0 ? 'SIN STOCK' : 'AÑADIR AL CARRO'}
                   </button>
                 </div>
               </div>
@@ -108,6 +152,7 @@ function Productos() {
         ))}
       </div>
 
+      {/* Mensaje de contingencia si no coinciden criterios */}
       {productosFiltrados.length === 0 && (
         <div className="text-center py-5 text-muted">
           No hay abarrotes disponibles para el filtro "{categoriaActiva}" en el LocalStorage.

@@ -18,6 +18,7 @@ import Blogs from './views/Blogs'
 import IniciarSesion from './views/IniciarSesion'
 import RegistroUsuario from './views/RegistroUsuario' // <-- Importado correctamente aquí
 import Categorias from './views/Categorias' // 
+import DetalleBlog from './views/DetalleBlog' // 
 
 // Importamos tu componente real de detalle con su nombre exacto
 import DetalleProductos from './views/DetalleProductos' 
@@ -54,6 +55,7 @@ function App() {
             <Route path="/nosotros" element={<Nosotros />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/login" element={<IniciarSesion />} />
+            <Route path="/blogs/:id" element={<DetalleBlog />} />
             
             {/* 🌟 CORREGIDO: Ahora usa tu componente real RegistroUsuario */}
             <Route path="/registro" element={<RegistroUsuario />} />
